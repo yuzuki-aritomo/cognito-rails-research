@@ -14,3 +14,15 @@ B
 Gemfile.lock,2/1/21fb5836b499a2be648386aac055d2e069160d6c
 C
 config/database.yml,2/c/2c912561029efc03ffae15b01b7337417d7a99bd
+4
+.env,3/c/3c84dcdc6bbe3d7817c49dcdc327b926fea1808a
+:
+
+bin/bundle,8/d/8d6a126d12d5381c7693c27cad5d2eca28213623
+:
+
+.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
+N
+app/service/congito_service.rb,7/e/7ec331d5a6598fa6a8b49b72aa32981d284ebc31
+N
+app/service/cognito_service.rb,e/c/ec301c8b5b5061f7a407d6171abbd577759e6674
