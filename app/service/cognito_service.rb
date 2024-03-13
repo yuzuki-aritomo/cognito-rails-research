@@ -42,7 +42,24 @@ class CognitoService
       }
     )
 
-    response.authentication_result.access_token
+    {
+      access_token: response.authentication_result.access_token,
+      refresh_token: response.authentication_result.refresh_token
+    }
+  end
+
+  def refresh_token(refresh_token)
+    response = @client.initiate_auth(
+      client_id: @client_id,
+      auth_flow: 'REFRESH_TOKEN_AUTH',
+      auth_parameters: {
+        'REFRESH_TOKEN' => refresh_token
+      }
+    )
+    {
+      access_token: response.authentication_result.access_token,
+      refresh_token: response.authentication_result.refresh_token
+    }
   end
 
   def get_user(access_token)
