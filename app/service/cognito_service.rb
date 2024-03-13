@@ -33,7 +33,7 @@ class CognitoService
   end
 
   def login(email, password)
-    resp = @client.initiate_auth(
+    response = @client.initiate_auth(
       client_id: @client_id,
       auth_flow: 'USER_PASSWORD_AUTH',
       auth_parameters: {
@@ -42,12 +42,12 @@ class CognitoService
       }
     )
 
-    token = resp.authentication_result.access_token
-    user = get_user_from_token(token)
-    {
-      json: user,
-      token: token,
-    }
+    response.authentication_result.access_token
+  end
+
+  def get_user(access_token)
+    response = @client.get_user({ access_token: access_token })
+    response.user_attributes
   end
 
   private
