@@ -55,13 +55,4 @@ class CognitoService
     user_attributes
     # User.find_by(cognito_id: user_attributes[:sub])
   end
-
-  private
-
-  def get_user_from_token(token)
-    # アクセストークンからユーザー情報を取得する処理
-    payload = token.split('.')[1]
-    decoded_payload = Base64.decode64(payload.tr('-_', '+/'))
-    JSON.parse(decoded_payload)
-  end
 end
