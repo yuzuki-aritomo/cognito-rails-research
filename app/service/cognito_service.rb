@@ -53,6 +53,7 @@ class CognitoService
       user_attributes[attr.name.to_sym] = attr.value
     end
     user_attributes
+    # User.find_by(cognito_id: user_attributes[:sub])
   end
 
   private
