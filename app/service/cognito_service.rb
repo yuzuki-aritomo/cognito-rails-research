@@ -31,4 +31,31 @@ class CognitoService
       confirmation_code: confirmation_code
     )
   end
+
+  def login(email, password)
+    resp = @client.initiate_auth(
+      client_id: @client_id,
+      auth_flow: 'USER_PASSWORD_AUTH',
+      auth_parameters: {
+        'USERNAME' => email,
+        'PASSWORD' => password
+      }
+    )
+
+    token = resp.authentication_result.access_token
+    user = get_user_from_token(token)
+    {
+      json: user,
+      token: token,
+    }
+  end
+
+  private
+
+  def get_user_from_token(token)
+    # アクセストークンからユーザー情報を取得する処理
+    payload = token.split('.')[1]
+    decoded_payload = Base64.decode64(payload.tr('-_', '+/'))
+    JSON.parse(decoded_payload)
+  end
 end
