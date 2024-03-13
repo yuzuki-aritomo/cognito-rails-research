@@ -47,7 +47,12 @@ class CognitoService
 
   def get_user(access_token)
     response = @client.get_user({ access_token: access_token })
-    response.user_attributes
+    # subはユーザーの一意なID
+    user_attributes = {}
+    response.user_attributes.each do |attr|
+      user_attributes[attr.name.to_sym] = attr.value
+    end
+    user_attributes
   end
 
   private
