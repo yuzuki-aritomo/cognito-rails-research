@@ -4,6 +4,7 @@ class CognitoService
   def initialize
     @user_pool_id = ENV['COGNITO_USER_POOL_ID']
     @client_id = ENV['COGNITO_CLIENT_ID']
+    @client_secret = ENV['COGNITO_CLIENT_SECRET']
     @client = Aws::CognitoIdentityProvider::Client.new(
       region: 'ap-northeast-1',
       credentials: Aws::Credentials.new(
@@ -71,5 +72,34 @@ class CognitoService
     end
     user_attributes
     # User.find_by(cognito_id: user_attributes[:sub])
+  end
+
+  def get_access_token_from_code(code)
+    redirect_uri = 'http://localhost:2000/oauth2/callback'
+
+    token_endpoint = 'https://sample-rails.auth.ap-northeast-1.amazoncognito.com/oauth2/token'
+
+    uri = URI(token_endpoint)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+
+    request = Net::HTTP::Post.new(uri.path)
+    request['Content-Type'] = 'application/x-www-form-urlencoded'
+    request.body = URI.encode_www_form(
+      code: code,
+      client_id: @client_id,
+      client_secret: @client_secret,
+      redirect_uri: redirect_uri,
+      grant_type: 'authorization_code'
+    )
+
+    response = http.request(request)
+
+    if response.is_a?(Net::HTTPSuccess)
+      JSON.parse(response.body)
+    else
+      # エラー処理をここに記述
+      response.body
+    end
   end
 end
