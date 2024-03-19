@@ -102,4 +102,20 @@ class CognitoService
       response.body
     end
   end
+
+  def add_user_to_group(username, group_name)
+    @client.admin_add_user_to_group(
+      user_pool_id: @user_pool_id,
+      username: username,
+      group_name: group_name,
+    )
+  end
+
+  def remove_user_from_group(username, group_name)
+    @client.admin_remove_user_from_group(
+      user_pool_id: @user_pool_id,
+      username: username,
+      group_name: group_name,
+    )
+  end
 end
