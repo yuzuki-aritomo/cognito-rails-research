@@ -14,6 +14,12 @@ class CognitoService
     )
   end
 
+  def generate_secret_hash(username)
+    message = username + @client_id
+    hmac = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha256'), @client_secret, message)
+    Base64.strict_encode64(hmac)
+  end
+
   def create_user(email, password)
     @client.sign_up(
       client_id: @client_id,
@@ -39,7 +45,8 @@ class CognitoService
       auth_flow: 'USER_PASSWORD_AUTH',
       auth_parameters: {
         'USERNAME' => email,
-        'PASSWORD' => password
+        'PASSWORD' => password,
+        'SECRET_HASH' => generate_secret_hash(email)
       }
     )
 
@@ -116,6 +123,13 @@ class CognitoService
       user_pool_id: @user_pool_id,
       username: username,
       group_name: group_name,
+    )
+  end
+
+  def forgot_password(username)
+    @client.forgot_password(
+      client_id: @client_id,
+      username: username
     )
   end
 end
