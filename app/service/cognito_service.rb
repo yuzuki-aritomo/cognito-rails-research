@@ -34,23 +34,23 @@ class CognitoService
     )
   end
 
-  def confirm_user(phone_number, confirmation_code)
+  def confirm_user(username, confirmation_code)
     @client.confirm_sign_up(
       client_id: @client_id,
-      username: phone_number,
+      username: username,
       confirmation_code: confirmation_code,
-      secret_hash: generate_secret_hash(phone_number)
+      secret_hash: generate_secret_hash(username)
     )
   end
 
-  def login(email, password)
+  def login(username, password)
     response = @client.initiate_auth(
       client_id: @client_id,
       auth_flow: 'USER_PASSWORD_AUTH',
       auth_parameters: {
-        'USERNAME' => email,
+        'USERNAME' => username,
         'PASSWORD' => password,
-        'SECRET_HASH' => generate_secret_hash(email)
+        'SECRET_HASH' => generate_secret_hash(username)
       }
     )
 
