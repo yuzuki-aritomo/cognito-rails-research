@@ -20,14 +20,17 @@ class CognitoService
     Base64.strict_encode64(hmac)
   end
 
-  def create_user(email, password)
+  def create_user(phone_number, email, password)
     @client.sign_up(
       client_id: @client_id,
       username: email,
       password: password,
       user_attributes: [
-        {name: 'email', value: email}
-      ]
+        {name: 'email', value: email},
+        {name: 'phone_number', value: phone_number},
+      ],
+      validation_data: [{name: 'phone_number', value: phone_number}],
+      secret_hash: generate_secret_hash(email)
     )
   end
 
@@ -35,7 +38,8 @@ class CognitoService
     @client.confirm_sign_up(
       client_id: @client_id,
       username: email,
-      confirmation_code: confirmation_code
+      confirmation_code: confirmation_code,
+      secret_hash: generate_secret_hash(email)
     )
   end
 
