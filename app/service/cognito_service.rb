@@ -129,7 +129,19 @@ class CognitoService
   def forgot_password(username)
     @client.forgot_password(
       client_id: @client_id,
-      username: username
+      username: username,
+      secret_hash: generate_secret_hash(username)
     )
   end
+
+  def confirm_forgot_password(username, confirmation_code, password)
+    @client.confirm_forgot_password(
+      client_id: @client_id,
+      username: username,
+      confirmation_code: confirmation_code,
+      password: password,
+      secret_hash: generate_secret_hash(username)
+    )
+  end
+
 end
