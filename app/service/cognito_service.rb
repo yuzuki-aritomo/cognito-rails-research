@@ -23,23 +23,23 @@ class CognitoService
   def create_user(phone_number, email, password)
     @client.sign_up(
       client_id: @client_id,
-      username: email,
+      username: phone_number,
       password: password,
       user_attributes: [
         {name: 'email', value: email},
         {name: 'phone_number', value: phone_number},
       ],
       validation_data: [{name: 'phone_number', value: phone_number}],
-      secret_hash: generate_secret_hash(email)
+      secret_hash: generate_secret_hash(phone_number)
     )
   end
 
-  def confirm_user(email, confirmation_code)
+  def confirm_user(phone_number, confirmation_code)
     @client.confirm_sign_up(
       client_id: @client_id,
-      username: email,
+      username: phone_number,
       confirmation_code: confirmation_code,
-      secret_hash: generate_secret_hash(email)
+      secret_hash: generate_secret_hash(phone_number)
     )
   end
 
