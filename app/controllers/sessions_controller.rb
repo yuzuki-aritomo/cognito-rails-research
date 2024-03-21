@@ -15,7 +15,7 @@ class SessionsController < ApplicationController
 
   def confirm_user
     cognito_service = CognitoService.new
-    user = cognito_service.confirm_user(params[:phone_number], params[:confirmation_code])
+    user = cognito_service.confirm_user(params[:username], params[:confirmation_code])
     render json: { user: user }
   end
 
