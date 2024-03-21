@@ -50,6 +50,58 @@ class CognitoService
       auth_parameters: {
         'USERNAME' => username,
         'PASSWORD' => password,
+        'SECRET_HASH' => generate_secret_hash(username),
+      }
+    )
+
+    {
+      access_token: response.authentication_result.access_token,
+      refresh_token: response.authentication_result.refresh_token,
+      device_key: response.authentication_result.new_device_metadata.device_key,
+    }
+  end
+
+  def device_auth(username, device_key, srp_a)
+    srp_a = @client.generate_srp_a({ user_id: username, client_id: @client_id, secret_hash: generate_secret_hash(username) })
+    response = @client.initiate_auth(
+      client_id: @client_id,
+      auth_flow: 'DEVICE_SRP_AUTH',
+      auth_parameters: {
+        'USERNAME' => username,
+        'DEVICE_KEY' => device_key,
+        'SRP_A' => srp_a
+      }
+    )
+    response
+  end
+
+  def confirm_device(access_token, device_key)
+    response = @client.confirm_device(
+      access_token: access_token,
+      device_key: device_key,
+      device_name: 'dummy',
+      # secret_hash: generate_secret_hash(username),
+      # username: username,
+    )
+    response
+  end
+
+  def update_device_status(access_token, device_key)
+    response = @client.update_device_status(
+      access_token: access_token,
+      device_key: device_key,
+      device_remembered_status: 'remembered',
+    )
+    response
+  end
+
+  def respond_to_auth_challenge(username, device_key = 'dummy')
+    response = @client.respond_to_auth_challenge(
+      client_id: @client_id,
+      challenge_name: 'DEVICE_SRP_AUTH',
+      challenge_responses: {
+        'USERNAME' => username,
+        'DEVICE_KEY' => device_key,
         'SECRET_HASH' => generate_secret_hash(username)
       }
     )
@@ -58,6 +110,25 @@ class CognitoService
       access_token: response.authentication_result.access_token,
       refresh_token: response.authentication_result.refresh_token
     }
+  end
+
+  def list_devices(access_token)
+    response = @client.list_devices(
+      access_token: access_token,
+      limit: 10  # 取得するデバイスの最大数を指定（オプション）
+    )
+
+    devices = response.devices
+
+    puts "User devices:"
+    devices.each do |device|
+      puts "Device key: #{device.device_key}"
+      puts "Device attributes: #{device.device_attributes}"
+      puts "Device creation date: #{device.device_create_date}"
+      puts "Device last modified date: #{device.device_last_modified_date}"
+      puts "Device last authenticated date: #{device.device_last_authenticated_date}"
+      puts "---------------------------"
+    end
   end
 
   def refresh_token(refresh_token)
@@ -74,6 +145,25 @@ class CognitoService
     }
   end
 
+  def describe_user_pool
+    response = @client.describe_user_pool({ user_pool_id: @user_pool_id })
+    puts response.user_pool.device_configuration
+    if response.user_pool.device_configuration
+      puts "デバイス追跡が有効: #{response.user_pool.device_configuration.device_only_remembered_on_user_prompt?}"
+      puts "新しいデバイスに対してチャレンジが必要: #{response.user_pool.device_configuration.challenge_required_on_new_device?}"
+    end
+  end
+
+  def update_user_pool
+    @client.update_user_pool(
+      user_pool_id: @user_pool_id,
+      device_configuration: {
+        device_only_remembered_on_user_prompt: true,
+        challenge_required_on_new_device: false
+      }
+    )
+  end
+
   def get_user(access_token)
     response = @client.get_user({ access_token: access_token })
     # subはユーザーの一意なID
@@ -88,7 +178,7 @@ class CognitoService
   def get_access_token_from_code(code)
     redirect_uri = 'http://localhost:2000/oauth2/callback'
 
-    token_endpoint = 'https://sample-rails.auth.ap-northeast-1.amazoncognito.com/oauth2/token'
+    token_endpoint = 'https://smple-sms.auth.ap-northeast-1.amazoncognito.com/oauth2/token'
 
     uri = URI(token_endpoint)
     http = Net::HTTP.new(uri.host, uri.port)
