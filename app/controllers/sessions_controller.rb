@@ -4,8 +4,13 @@ class SessionsController < ApplicationController
   def signup
     cognito_service = CognitoService.new
     user = cognito_service.create_user(params[:username], params[:phone_number], params[:password])
+    User.create!(cognito_sub: user[:user_sub], username: params[:username], phone_number: params[:phone_number])
 
-    render json: { user: user }
+    res = params[:user_type].map do |type|
+      cognito_service.add_user_to_group(params[:username], type)
+    end
+
+    render json: { user: user, group: res }
   end
 
   def confirm_user

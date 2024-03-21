@@ -20,16 +20,16 @@ class CognitoService
     Base64.strict_encode64(hmac)
   end
 
-  def create_user(username, phone_number, password, email=nil)
+  def create_user(username, phone_number, password, email = nil)
     @client.sign_up(
       client_id: @client_id,
       username: username,
       password: password,
       user_attributes: [
         # {name: 'email', value: email},
-        {name: 'phone_number', value: phone_number},
+        { name: 'phone_number', value: phone_number },
       ],
-      validation_data: [{name: 'phone_number', value: phone_number}],
+      validation_data: [{ name: 'phone_number', value: phone_number }],
       secret_hash: generate_secret_hash(username)
     )
   end
@@ -80,8 +80,8 @@ class CognitoService
       access_token: access_token,
       device_key: device_key,
       device_name: 'dummy',
-      # secret_hash: generate_secret_hash(username),
-      # username: username,
+    # secret_hash: generate_secret_hash(username),
+    # username: username,
     )
     response
   end
@@ -115,7 +115,7 @@ class CognitoService
   def list_devices(access_token)
     response = @client.list_devices(
       access_token: access_token,
-      limit: 10  # 取得するデバイスの最大数を指定（オプション）
+      limit: 10 # 取得するデバイスの最大数を指定（オプション）
     )
 
     devices = response.devices
