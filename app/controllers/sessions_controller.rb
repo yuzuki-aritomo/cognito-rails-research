@@ -20,6 +20,8 @@ class SessionsController < ApplicationController
   end
 
   def login
-    render json: { message: 'login' }
+    cognito_service = CognitoService.new
+    token = cognito_service.login(params[:id], params[:password])
+    render json: { token: token }
   end
 end
