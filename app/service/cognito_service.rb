@@ -120,15 +120,7 @@ class CognitoService
 
     devices = response.devices
 
-    puts "User devices:"
-    devices.each do |device|
-      puts "Device key: #{device.device_key}"
-      puts "Device attributes: #{device.device_attributes}"
-      puts "Device creation date: #{device.device_create_date}"
-      puts "Device last modified date: #{device.device_last_modified_date}"
-      puts "Device last authenticated date: #{device.device_last_authenticated_date}"
-      puts "---------------------------"
-    end
+    puts "User devices: #{devices}"
   end
 
   def refresh_token(refresh_token)
@@ -177,8 +169,7 @@ class CognitoService
 
   def get_access_token_from_code(code)
     redirect_uri = 'http://localhost:2000/oauth2/callback'
-
-    token_endpoint = 'https://smple-sms.auth.ap-northeast-1.amazoncognito.com/oauth2/token'
+    token_endpoint = 'https://sample-signup.auth.ap-northeast-1.amazoncognito.com/oauth2/token'
 
     uri = URI(token_endpoint)
     http = Net::HTTP.new(uri.host, uri.port)
