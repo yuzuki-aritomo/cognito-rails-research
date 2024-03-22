@@ -61,57 +61,6 @@ class CognitoService
     }
   end
 
-  def device_auth(username, device_key, srp_a)
-    srp_a = @client.generate_srp_a({ user_id: username, client_id: @client_id, secret_hash: generate_secret_hash(username) })
-    response = @client.initiate_auth(
-      client_id: @client_id,
-      auth_flow: 'DEVICE_SRP_AUTH',
-      auth_parameters: {
-        'USERNAME' => username,
-        'DEVICE_KEY' => device_key,
-        'SRP_A' => srp_a
-      }
-    )
-    response
-  end
-
-  def confirm_device(access_token, device_key)
-    response = @client.confirm_device(
-      access_token: access_token,
-      device_key: device_key,
-      device_name: 'dummy',
-    # secret_hash: generate_secret_hash(username),
-    # username: username,
-    )
-    response
-  end
-
-  def update_device_status(access_token, device_key)
-    response = @client.update_device_status(
-      access_token: access_token,
-      device_key: device_key,
-      device_remembered_status: 'remembered',
-    )
-    response
-  end
-
-  def respond_to_auth_challenge(username, device_key = 'dummy')
-    response = @client.respond_to_auth_challenge(
-      client_id: @client_id,
-      challenge_name: 'DEVICE_SRP_AUTH',
-      challenge_responses: {
-        'USERNAME' => username,
-        'DEVICE_KEY' => device_key,
-        'SECRET_HASH' => generate_secret_hash(username)
-      }
-    )
-
-    {
-      access_token: response.authentication_result.access_token,
-      refresh_token: response.authentication_result.refresh_token
-    }
-  end
-
   def list_devices(access_token)
     response = @client.list_devices(
       access_token: access_token,
@@ -169,7 +118,7 @@ class CognitoService
 
   def get_access_token_from_code(code)
     redirect_uri = 'http://localhost:2000/oauth2/callback'
-    token_endpoint = 'https://sample-signup.auth.ap-northeast-1.amazoncognito.com/oauth2/token'
+    token_endpoint = ENV['COGNITO_URL']
 
     uri = URI(token_endpoint)
     http = Net::HTTP.new(uri.host, uri.port)
@@ -235,6 +184,14 @@ class CognitoService
       confirmation_code: confirmation_code,
       password: password,
       secret_hash: generate_secret_hash(username)
+    )
+  end
+
+  # admin
+  def admin_delete_user(username)
+    @client.admin_delete_user(
+      user_pool_id: @user_pool_id,
+      username: username
     )
   end
 
