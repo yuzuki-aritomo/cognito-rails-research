@@ -111,7 +111,7 @@ class CognitoService
     response.user_attributes.each do |attr|
       user_attributes[attr.name.to_sym] = attr.value
     end
-    user_attributes
+    user_attributes.merge(username: response.username)
     # User.find_by(cognito_id: user_attributes[:sub])
   end
 
@@ -130,7 +130,8 @@ class CognitoService
       client_id: @client_id,
       client_secret: @client_secret,
       redirect_uri: redirect_uri,
-      grant_type: 'authorization_code'
+      grant_type: 'authorization_code',
+      scope: 'aws.cognito.signin.user.admin'
     )
 
     response = http.request(request)

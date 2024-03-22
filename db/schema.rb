@@ -16,7 +16,7 @@ ActiveRecord::Schema.define(version: 2024_03_21_071057) do
   enable_extension "plpgsql"
 
   create_table "users", force: :cascade do |t|
-    t.string "phone_number", null: false
+    t.string "phone_number"
     t.string "email"
     t.string "cognito_sub", null: false
     t.string "username", null: false
