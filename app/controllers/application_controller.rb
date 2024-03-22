@@ -6,8 +6,7 @@ class ApplicationController < ActionController::API
     return render json: { error: 'access-token is required' }, status: :unauthorized if token.nil?
 
     user = CognitoService.new.get_user(token)
-    @current_user = user
-    # @current_user = User.find_by(cognito_id: user[:sub])
+    @current_user = User.find_by(cognito_sub: user[:sub])
   rescue => e
     render json: { error: e.message }, status: :unauthorized
   end
