@@ -57,7 +57,6 @@ class CognitoService
     {
       access_token: response.authentication_result.access_token,
       refresh_token: response.authentication_result.refresh_token,
-      device_key: response.authentication_result.new_device_metadata.device_key,
     }
   end
 
