@@ -194,5 +194,4 @@ class CognitoService
       username: username
     )
   end
-
 end

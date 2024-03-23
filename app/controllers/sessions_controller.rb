@@ -24,4 +24,16 @@ class SessionsController < ApplicationController
     token = cognito_service.login(params[:id], params[:password])
     render json: { token: token }
   end
+
+  def forgot_password
+    cognito_service = CognitoService.new
+    cognito_service.forgot_password(params[:username])
+    render json: { message: 'success' }
+  end
+
+  def confirm_forgot_password
+    cognito_service = CognitoService.new
+    cognito_service.confirm_forgot_password(params[:username], params[:confirmation_code], params[:password])
+    render json: { message: 'success' }
+  end
 end
