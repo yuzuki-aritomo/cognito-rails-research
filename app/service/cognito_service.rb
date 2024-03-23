@@ -53,7 +53,7 @@ class CognitoService
         'SECRET_HASH' => generate_secret_hash(username),
       }
     )
-
+    # TODO: 認証済ユーザーかの判定を追加
     {
       access_token: response.authentication_result.access_token,
       refresh_token: response.authentication_result.refresh_token,
