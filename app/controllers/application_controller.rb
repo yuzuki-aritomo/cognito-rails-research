@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::API
+  include ActionController::Cookies
+
   before_action :authenticate_user
 
   def authenticate_user
@@ -8,7 +10,9 @@ class ApplicationController < ActionController::API
     user = CognitoService.new.get_user(token)
     @current_user = User.find_by(cognito_sub: user[:sub])
     @groups = CognitoService.new.get_user_groups(@current_user[:username])
+    cookies[:test] = 'test'
   rescue => e
+    logger.error e.message
     render json: { error: e.message }, status: :unauthorized
   end
 end
