@@ -4,13 +4,12 @@ class ApplicationController < ActionController::API
   before_action :authenticate_user
 
   def authenticate_user
-    token = request.headers['access-token']
+    token = cookies['access-token']
     return render json: { error: 'access-token is required' }, status: :unauthorized if token.nil?
 
     user = CognitoService.new.get_user(token)
     @current_user = User.find_by(cognito_sub: user[:sub])
     @groups = CognitoService.new.get_user_groups(@current_user[:username])
-    cookies[:test] = 'test'
   rescue => e
     logger.error e.message
     render json: { error: e.message }, status: :unauthorized

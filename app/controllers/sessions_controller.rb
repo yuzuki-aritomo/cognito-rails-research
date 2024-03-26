@@ -22,6 +22,18 @@ class SessionsController < ApplicationController
   def login
     cognito_service = CognitoService.new
     token = cognito_service.login(params[:id], params[:password])
+    cookies['access-token'] = {
+      value: token[:access_token],
+      httponly: true,
+      secure: Rails.env.production?,
+      expires: 1.hour.from_now,
+    }
+    cookies['refresh-token'] = {
+      value: token[:refresh_token],
+      httponly: true,
+      secure: Rails.env.production?,
+      expires: 1.month.from_now,
+    }
     render json: { token: token }
   end
 
